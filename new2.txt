@@ -1,0 +1,14 @@
+ // 使用Handler的postDelayed方法，2秒后执行跳转到MainActivity
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+                        goHome();
+                    }
+                }, 2000);
+            }
+
+            private void goHome() {
+                Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                SplashActivity.this.startActivity(intent);
+                SplashActivity.this.finish();
+            }
+        }
