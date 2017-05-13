@@ -1,0 +1,151 @@
+短信应用
+package ad.com.app;
+import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.database.Cursor;
+import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.telephony.SmsManager;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.jar.Attributes;
+
+public class MainActivity extends Activity {
+    ListView contacts;
+    ArrayAdapter<String> adapter;
+    List<String> contactsList=new ArrayList<String>();
+    Button button,button1;
+    EditText NameEdittext,ContentEdittext;
+    SmsManager smsManager;
+    String   str,str1;
+
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        contacts=(ListView)findViewById(R.id.listview);
+        button=(Button)findViewById(R.id.button);
+        button1=(Button)findViewById(R.id.button1) ;
+        NameEdittext=(EditText)findViewById(R.id.nameEdittext) ;
+        ContentEdittext=(EditText)findViewById(R.id.contentEdittext);
+        smsManager=SmsManager.getDefault();
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                adapter=new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1,contactsList);
+                contacts.setAdapter(adapter);
+                readContacts();
+            }
+        });
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                str1=str.substring(str.indexOf("1"));
+                PendingIntent pi=PendingIntent.getActivity(MainActivity.this,0,new Intent(),0);
+                smsManager.sendTextMessage(str1,null,ContentEdittext.getText().toString(),pi,null);
+                Toast.makeText(MainActivity.this,"已发送",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+	//读取联系人
+    private void readContacts(){
+        Cursor cursor=null;
+        try{
+
+            cursor=getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,null,null,null);
+            while(cursor.moveToNext()){
+                final String Name=cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                final String Number=cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                contactsList.add(Name + "\n" + Number);
+                contacts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        str=contactsList.get(i);
+                        NameEdittext.setText(str);
+
+                    }
+                });
+            }
+
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }finally {
+            if (cursor!=null){
+                cursor.close();
+            }
+        }
+    }
+
+
+}
+布局文件
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    tools:context="ad.com.app.MainActivity"
+    android:weightSum="1">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TableRow>
+            <EditText
+                android:layout_width="260dp"
+                android:layout_height="wrap_content"
+                android:hint="用户"
+                android:id="@+id/nameEdittext"/>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/button"
+                android:hint="联系人"
+                android:background="@color/coloryellow"/>
+
+        </TableRow>
+    </TableLayout>
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TableRow>
+    <EditText
+        android:layout_width="260dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/contentEdittext"
+        android:hint="编辑内容"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="发送"
+        android:id="@+id/button1"/>
+        </TableRow>
+
+    </TableLayout>
+
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/listview">
+
+    </ListView>
+
+
+</LinearLayout>
