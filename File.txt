@@ -1,0 +1,14 @@
+//在手机根目录下创建一个文件夹
+StringBuffer sDir = new StringBuffer();
+            if (hasSDcard()) {
+                sDir.append(Environment.getExternalStorageDirectory() + "/MyPicture/");
+            } else {
+                String dataPath = Environment.getRootDirectory().getPath();
+                sDir.append(dataPath + "/MyPicture/");
+            }
+
+            File fileDir = new File(sDir.toString());
+            if (!fileDir.exists()) {
+                fileDir.mkdirs();
+            }
+            File file = new File(fileDir, String.valueOf(System.currentTimeMillis()) + ".jpg");
